@@ -36,3 +36,15 @@ func (r *Room) Join(player *Player) error {
 	r.Players[player.ID] = player
 	return nil
 }
+
+func (r *Room) GetPlayer(playerID string) (Player, bool) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	p, exists := r.Players[playerID]
+	if !exists{
+		return Player{}, false
+	}
+
+	return *p, true
+}

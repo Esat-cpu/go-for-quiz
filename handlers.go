@@ -8,6 +8,15 @@ import (
 )
 
 func (a *App) handleJoin(w http.ResponseWriter, r *http.Request) {
+	if s, ok := a.GetSessionFromRequest(r); ok {
+		if p, ok := a.Room.GetPlayer(s.PlayerID); ok {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			json.NewEncoder(w).Encode(p)
+			return
+		}
+	}
+
 	var body struct {
 		Nickname string `json:"nickname"`
 	}
@@ -47,7 +56,7 @@ func (a *App) handleJoin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-type", "application/json")
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(p)
 }
