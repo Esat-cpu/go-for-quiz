@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"sync"
@@ -13,10 +12,6 @@ type App struct {
 	sessionMu sync.Mutex
 }
 
-func helo(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Hello!")
-}
-
 func HTTPServer() {
 	app := &App{
 		Room:     NewRoom("1"),
@@ -25,8 +20,9 @@ func HTTPServer() {
 
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/{$}", helo)
+	mux.HandleFunc("GET /{$}", app.handleIndex)
 	mux.HandleFunc("POST /join", app.handleJoin)
+	mux.HandleFunc("GET /lobby", app.handleLobby)
 
 	log.Println("Server is listening on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", mux))

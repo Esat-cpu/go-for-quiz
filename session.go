@@ -36,3 +36,12 @@ func (a *App) GetSessionFromRequest(r *http.Request) (Session, bool) {
 
 	return a.GetSession(cookie.Value)
 }
+
+func (a *App) GetPlayerFromRequest(r *http.Request) (Player, bool) {
+	s, ok := a.GetSessionFromRequest(r)
+	if !ok {
+		return Player{}, false
+	}
+
+	return a.Room.GetPlayer(s.PlayerID)
+}

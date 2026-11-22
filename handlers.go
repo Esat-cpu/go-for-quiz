@@ -7,14 +7,31 @@ import (
 	"strings"
 )
 
+func (a *App) handleIndex(w http.ResponseWriter, r *http.Request) {
+	if _, ok := a.GetPlayerFromRequest(r); ok {
+		http.Redirect(w, r, "/lobby", http.StatusSeeOther)
+		return
+	}
+
+	http.ServeFile(w, r, "web/index.html")
+}
+
+func (a *App) handleLobby(w http.ResponseWriter, r *http.Request) {
+	_, ok := a.GetPlayerFromRequest(r)
+	if !ok {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	http.ServeFile(w, r, "web/lobby.html")
+}
+
 func (a *App) handleJoin(w http.ResponseWriter, r *http.Request) {
-	if s, ok := a.GetSessionFromRequest(r); ok {
-		if p, ok := a.Room.GetPlayer(s.PlayerID); ok {
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusOK)
-			json.NewEncoder(w).Encode(p)
-			return
-		}
+	if p, ok := a.GetPlayerFromRequest(r); ok {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(p)
+		return
 	}
 
 	var body struct {
