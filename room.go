@@ -42,7 +42,7 @@ func (r *Room) GetPlayer(playerID string) (Player, bool) {
 	defer r.mu.Unlock()
 
 	p, exists := r.Players[playerID]
-	if !exists{
+	if !exists {
 		return Player{}, false
 	}
 

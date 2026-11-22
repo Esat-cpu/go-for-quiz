@@ -8,6 +8,8 @@ import (
 )
 
 func (a *App) handleIndex(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Cache-Control", "no-store")
+
 	if _, ok := a.GetPlayerFromRequest(r); ok {
 		http.Redirect(w, r, "/lobby", http.StatusSeeOther)
 		return
@@ -17,6 +19,8 @@ func (a *App) handleIndex(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *App) handleLobby(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Cache-Control", "no-store")
+
 	_, ok := a.GetPlayerFromRequest(r)
 	if !ok {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -45,7 +49,7 @@ func (a *App) handleJoin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	body.Nickname = strings.TrimSpace(body.Nickname)
-	
+
 	if body.Nickname == "" {
 		http.Error(w, "nickname alanı gereklidir", http.StatusBadRequest)
 		return

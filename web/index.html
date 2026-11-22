@@ -1,11 +1,33 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101d2b">
+  <title>Katıl · Ready, Go!</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="js/join.js" defer></script>
 </head>
-<body>
-    
+<body data-screen="join">
+  <div class="page-shell">
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="Ready, Go! ana sayfa"><span class="brand-ready">Ready,</span> <span class="brand-go">Go!</span></a>
+    </header>
+    <main class="join-layout">
+      <section class="card join-card" aria-labelledby="join-title">
+        <h1 id="join-title">Hoş geldin!</h1>
+        <form id="join-form" action="/join" method="post">
+          <div class="field">
+            <label for="nickname">Takma adın</label>
+            <input id="nickname" name="nickname" type="text" placeholder="Takma adını yaz" autocomplete="nickname" required aria-describedby="join-error">
+          </div>
+          <p class="form-error" id="join-error" role="alert" hidden></p>
+          <button class="button button-primary" id="join-button" type="submit">Yarışmaya katıl</button>
+          <p class="visually-hidden" id="join-status" role="status"></p>
+        </form>
+        <noscript><p class="notice">Katılmak için JavaScript'i etkinleştir.</p></noscript>
+      </section>
+    </main>
+  </div>
 </body>
 </html>

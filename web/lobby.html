@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101d2b">
+  <title>Bekleme odası · Ready, Go!</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script type="module" src="js/room.js"></script>
+</head>
+<body data-screen="lobby">
+  <div class="page-shell">
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="Ready, Go! ana sayfa"><span class="brand-ready">Ready,</span> <span class="brand-go">Go!</span></a>
+    </header>
+    <main class="lobby-layout">
+      <div class="page-heading">
+        <h1>Bekleme odası</h1>
+        <p>Yöneticinin yarışmayı başlatması bekleniyor.</p>
+      </div>
+      <section class="card players-card" aria-labelledby="players-title">
+        <div class="card-heading">
+          <h2 id="players-title">Çevrimiçi oyuncular</h2>
+          <span class="count-badge" aria-label="Çevrimiçi oyuncu sayısı henüz bilinmiyor"><span id="player-count">—</span><span class="count-label">oyuncu</span></span>
+        </div>
+        <div class="empty-state" id="players-empty">
+          <h3 id="empty-title">Oyuncu listesi henüz kullanılamıyor</h3>
+          <p id="empty-description">Canlı bağlantı bekleniyor.</p>
+        </div>
+        <ul class="player-list" id="player-list" aria-label="Çevrimiçi oyuncular" hidden></ul>
+        <p class="visually-hidden" id="players-status" role="status">Oyuncu listesi henüz kullanılamıyor.</p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
