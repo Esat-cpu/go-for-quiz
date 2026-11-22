@@ -27,8 +27,17 @@ func (a *App) handleJoin(w http.ResponseWriter, r *http.Request) {
 
 	p := NewPlayer(body.Nickname)
 
-	err = a.Room.Join(p)
+	token := a.CreateSession(p.ID)
 
+	http.SetCookie(w, &http.Cookie{
+		Name:     "session",
+		Value:    token,
+		Path:     "/",
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
+	})
+
+	err = a.Room.Join(p)
 	if err != nil {
 		if errors.Is(err, ErrGameStarted) {
 			http.Error(w, "Oyun zaten başladı", http.StatusConflict)

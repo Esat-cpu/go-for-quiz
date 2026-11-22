@@ -1,10 +1,5 @@
 package main
 
-import (
-	"crypto/rand"
-	"encoding/hex"
-)
-
 type Player struct {
 	ID       string
 	Nickname string
@@ -13,12 +8,8 @@ type Player struct {
 }
 
 func NewPlayer(nickname string) *Player {
-	var b [16]byte
-	rand.Read(b[:])
-	id := hex.EncodeToString(b[:])
-
 	return &Player{
-		ID:       id,
+		ID:       randHex(),
 		Nickname: nickname,
 	}
 }

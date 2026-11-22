@@ -4,10 +4,13 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"sync"
 )
 
 type App struct {
-	Room *Room
+	Room      *Room
+	Sessions  map[string]Session
+	sessionMu sync.Mutex
 }
 
 func helo(w http.ResponseWriter, r *http.Request) {
@@ -16,7 +19,8 @@ func helo(w http.ResponseWriter, r *http.Request) {
 
 func HTTPServer() {
 	app := &App{
-		Room: NewRoom("1"),
+		Room:     NewRoom("1"),
+		Sessions: make(map[string]Session),
 	}
 
 	mux := http.NewServeMux()
