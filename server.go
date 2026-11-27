@@ -29,6 +29,8 @@ func HTTPServer() {
 	mux.Handle("/js/",
 		http.StripPrefix("/js/", http.FileServer(http.Dir("web/js"))))
 
+	mux.HandleFunc("GET /ws", app.handleWebSocket)
+
 	log.Println("Server is listening on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", mux))
 }

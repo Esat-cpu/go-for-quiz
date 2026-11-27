@@ -7,3 +7,9 @@ window.quizRoom = Object.freeze({
 });
 
 // Host controls stay disabled until authenticated host actions exist.
+
+const ws = new WebSocket(`ws://${location.host}/ws`);
+
+ws.onopen = () => console.log("Connected");
+ws.onclose = e => console.log("Closed:", e.code);
+ws.onerror = e => console.log("Error:", e);

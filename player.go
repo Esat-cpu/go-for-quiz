@@ -5,6 +5,7 @@ type Player struct {
 	Nickname string
 	Score    int
 	Online   bool
+	connGen  uint64
 }
 
 func NewPlayer(nickname string) *Player {
