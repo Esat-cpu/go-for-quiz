@@ -1,4 +1,3 @@
-// Presentation only: a future backend adapter supplies confirmed player data.
 export class PlayerList {
   constructor(root) {
     this.players = new Map();
@@ -49,6 +48,9 @@ export class PlayerList {
 
   render() {
     const players = this.available ? [...this.players.values()] : [];
+    players.sort((a, b) =>
+      a.nickname.localeCompare(b.nickname, "tr") || a.id.localeCompare(b.id, "en")
+    );
     const fragment = document.createDocumentFragment();
     for (const player of players) {
       const item = document.createElement("li");

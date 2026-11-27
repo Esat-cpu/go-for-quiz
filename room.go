@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"log"
 	"sync"
@@ -13,6 +14,11 @@ type Room struct {
 	clients map[string]*Client
 	started bool
 	mu      sync.Mutex
+}
+
+type LobbyPlayer struct {
+	ID       string
+	Nickname string
 }
 
 var ErrGameStarted = errors.New("game has already started")
@@ -69,11 +75,18 @@ func (r *Room) Connect(playerID string, client *Client) bool {
 
 	p.Online = true
 	p.connGen++
+
+	if !r.started {
+		r.broadcastLobbyPlayersLocked()
+	}
+
 	r.mu.Unlock()
 
 	if ok {
 		oldConn.cancel()
 	}
+
+	log.Printf("Player connected: Nickname: [%s] ID: [%s]\n", p.Nickname, p.ID)
 
 	return true
 }
@@ -114,6 +127,63 @@ func (r *Room) Disconnect(playerID string, client *Client) {
 			p.Online = false
 		} else {
 			delete(r.players, playerID)
+			r.broadcastLobbyPlayersLocked()
 		}
 	})
+}
+
+func (r *Room) Broadcast(msg []byte) {
+	r.mu.Lock()
+
+	for _, client := range r.clients {
+		select {
+		case client.send <- msg:
+		default:
+			defer client.cancel()
+		}
+	}
+
+	r.mu.Unlock()
+}
+
+func (r *Room) broadcastLocked(msg []byte) {
+	for _, client := range r.clients {
+		select {
+		case client.send <- msg:
+		default:
+			client.cancel()
+		}
+	}
+}
+
+func (r *Room) onlineLobbyPlayersLocked() []LobbyPlayer {
+	li := make([]LobbyPlayer, 0, 10)
+
+	for _, player := range r.players {
+		if player.Online {
+			li = append(li, LobbyPlayer{
+				ID:       player.ID,
+				Nickname: player.Nickname,
+			})
+		}
+	}
+
+	return li
+}
+
+func (r *Room) broadcastLobbyPlayersLocked() {
+	players := r.onlineLobbyPlayersLocked()
+
+	lpm := LobbyPlayersMessage{
+		Type:    "lobby_players",
+		Players: players,
+	}
+
+	msg, err := json.Marshal(lpm)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	r.broadcastLocked(msg)
 }

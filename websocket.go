@@ -12,6 +12,26 @@ import (
 type Client struct {
 	conn   *websocket.Conn
 	cancel context.CancelFunc
+	send   chan []byte
+}
+
+func (c *Client) writePump(ctx context.Context) {
+	for {
+		select {
+		case msg := <-c.send:
+			writeCtx, writeCancel := context.WithTimeout(ctx, 2*time.Second)
+
+			err := c.conn.Write(writeCtx, websocket.MessageText, msg)
+			writeCancel()
+			if err != nil {
+				c.cancel()
+				log.Println(err)
+				return
+			}
+		case <-ctx.Done():
+			return
+		}
+	}
 }
 
 func (a *App) handleWebSocket(w http.ResponseWriter, r *http.Request) {
@@ -34,6 +54,7 @@ func (a *App) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	client := &Client{
 		conn:   conn,
 		cancel: cancel,
+		send:   make(chan []byte, 32),
 	}
 
 	ok = a.Room.Connect(p.ID, client)
@@ -43,9 +64,8 @@ func (a *App) handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	}
 	defer a.Room.Disconnect(p.ID, client)
 
-	log.Printf("Player connected: Nickname: [%s] ID: [%s]\n", p.Nickname, p.ID)
-
 	go heartbeat(ctx, conn, cancel)
+	go client.writePump(ctx)
 
 	for {
 		msgType, msg, err := conn.Read(ctx)
